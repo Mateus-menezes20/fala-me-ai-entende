@@ -1,13 +1,14 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { MessageSquare, Plus, Filter, ArrowLeft } from "lucide-react";
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
+import { toast } from "sonner";
 
-// Mock data para exibição inicial
-const mockTickets = [
+// Estrutura de dados inicial para chamados
+const initialTickets = [
   {
     id: "001",
     titulo: "Problema na rede",
@@ -30,10 +31,34 @@ const mockTickets = [
   }
 ];
 
+// Recupera os chamados do localStorage ou usa os iniciais
+const getStoredTickets = () => {
+  const stored = localStorage.getItem('tickets');
+  return stored ? JSON.parse(stored) : initialTickets;
+};
+
 const Index = () => {
   // Estado para controlar os chamados
-  const [tickets, setTickets] = useState(mockTickets);
+  const [tickets, setTickets] = useState(getStoredTickets);
   const [darkMode, setDarkMode] = useState(true);
+  
+  // Atualiza o localStorage sempre que os tickets mudarem
+  useEffect(() => {
+    localStorage.setItem('tickets', JSON.stringify(tickets));
+  }, [tickets]);
+  
+  // Se um novo ticket foi criado, atualiza a lista
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const storedTickets = getStoredTickets();
+      setTickets(storedTickets);
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
   
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);

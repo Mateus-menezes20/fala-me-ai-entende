@@ -7,7 +7,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { MessageSquare } from "lucide-react";
+import { MessageSquare, ArrowLeft } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const CreateTicket = () => {
   const navigate = useNavigate();
@@ -40,8 +41,35 @@ const CreateTicket = () => {
       return;
     }
 
-    // Aqui seria a integração com seu sistema de backend
-    // Simulação de envio bem-sucedido
+    // Recupera chamados existentes
+    const storedTickets = localStorage.getItem('tickets');
+    const existingTickets = storedTickets ? JSON.parse(storedTickets) : [];
+    
+    // Gera ID para o novo chamado (formato: incrementa em 1 o último ID)
+    const lastId = existingTickets.length > 0 
+      ? parseInt(existingTickets[existingTickets.length - 1].id) 
+      : 0;
+    const newId = (lastId + 1).toString().padStart(3, '0');
+    
+    // Cria o novo chamado
+    const newTicket = {
+      id: newId,
+      titulo: ticket.title,
+      descricao: `${ticket.description}. Contato: ${ticket.email}, ${ticket.phone || 'sem telefone'}.`,
+      entidade: ticket.entity,
+      tipo: ticket.type,
+      status: "Novo",
+      categoria: ticket.category,
+      atribuido: "-"
+    };
+    
+    // Adiciona o novo chamado à lista
+    const updatedTickets = [...existingTickets, newTicket];
+    localStorage.setItem('tickets', JSON.stringify(updatedTickets));
+    
+    // Dispara evento para atualizar outras abas
+    window.dispatchEvent(new Event('storage'));
+    
     toast.success("Chamado criado com sucesso!");
     navigate("/");
   };
@@ -56,12 +84,12 @@ const CreateTicket = () => {
         </div>
         
         <nav className="space-y-6 flex-1">
-          <div className="flex items-center gap-2 text-white/70">
+          <Link to="/" className="flex items-center gap-2 text-white/70 hover:text-white">
             <MessageSquare size={20} />
             <span>Chamados</span>
-          </div>
+          </Link>
           
-          <div className="flex items-center gap-2 text-white font-medium">
+          <div className="flex items-center gap-2 text-white">
             <span className="w-5 h-5 flex items-center justify-center bg-white text-[#121328] rounded-sm">+</span>
             <span>Criar chamados</span>
           </div>
@@ -77,7 +105,7 @@ const CreateTicket = () => {
             onClick={() => navigate("/")}
             className="flex items-center gap-2 text-white/70 hover:text-white"
           >
-            <span>«</span>
+            <ArrowLeft size={16} />
             <span>Voltar para o home</span>
           </button>
         </div>

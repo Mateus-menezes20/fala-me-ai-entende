@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { MessageSquare, ArrowLeft } from "lucide-react";
+import { MessageSquare, Plus, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const CreateTicket = () => {
@@ -94,10 +94,10 @@ const CreateTicket = () => {
             <span>Criar chamados</span>
           </div>
           
-          <div className="flex items-center gap-2 text-white/70">
+          <Link to="/suporte" className="flex items-center gap-2 text-white/70 hover:text-white">
             <span className="w-5 h-5 flex items-center justify-center rounded-sm">🎧</span>
             <span>Suporte</span>
-          </div>
+          </Link>
         </nav>
         
         <div className="mt-auto">
